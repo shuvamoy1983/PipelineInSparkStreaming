@@ -1,0 +1,18 @@
+Environment: Dev
+SourceType : Kafka
+KafkaTopic: ["topic1-emp","topic1-dept"]
+KafkaSchemaDataSetName: ["emp.avsc","dept.avsc"]
+outputOptions:
+  NoSqlDb: Cassandra
+  DB: Mysql
+  FileLoc:
+  BigqueryStageTable:
+  SaveMode:
+  targetTable: emp,dept
+  mysqlDatabaseName: MyDB
+  savemode: overwrite
+FileConversion: CsvToText
+explain: true
+loglevels: Info
+appName: GcpDataFlow
+StorageLocation: ["gs://shuva-buc/emp","gs://shuva-buc/dept"]

@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "dept",
+  "namespace": "io.schemaregistry",
+  "fields": [
+    {"name": "DEPT_ID","type": ["int", "null"]},
+    {"name": "Dept_Name","type": ["string", "null"]},
+    {"name": "EMP_ID","type": ["int", "null"]}
+
+  ]
+}
