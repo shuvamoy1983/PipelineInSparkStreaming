@@ -9,6 +9,8 @@ import org.apache.spark.examples.sparkSession.ConnectSession
 import org.apache.spark.examples.sparkSession.ConnectSession._
 import org.apache.spark.examples.OutputWrite.OutputMapToDownstreamApp._
 import org.apache.spark.examples.Utils.readFileFromResource
+import scala.collection.mutable.ListBuffer
+import org.apache.spark.examples.OutputWrite.OutputTest
 
 object MainJob {
   def main(args: Array[String]): Unit = {
@@ -25,22 +27,26 @@ object MainJob {
       val mysqlConn=ConnectSession.CreateMySqlJDBC(config.Environment)
       println(mysqlConn._1,mysqlConn._2)
 
+      val mytopicList =new ListBuffer[String]()
+      val mySchemaList =new ListBuffer[String]()
 
 
-       while(true) {
         var lenOfSchema=config.KafkaSchemaDataSetName.length -1
         //writeKafkaToMultipleApp()
         config.KafkaSchemaDataSetName.foreach { schema =>
           val KafkaTopic = config.KafkaTopic(lenOfSchema)
           val schemainfo = config.KafkaSchemaDataSetName(lenOfSchema)
-          println(KafkaTopic)
-          println(schemainfo)
-          writeKafkaToMultipleApp(schemainfo, KafkaTopic,config,lenOfSchema)
+          mytopicList +=KafkaTopic
+          mySchemaList +=schemainfo
+
+
+         // writeKafkaToMultipleApp(schemainfo, KafkaTopic,config,lenOfSchema)
           Thread.sleep(4000L)
           lenOfSchema = lenOfSchema - 1
         }
 
-      }
+      OutputTest.writeKafkaToMultipleApp(mytopicList,mySchemaList,config)
+
     })
 
   }

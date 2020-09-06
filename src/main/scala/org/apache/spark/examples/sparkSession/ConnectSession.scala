@@ -28,6 +28,8 @@ object ConnectSession {
       .set("spark.scheduler.allocation.file",s"$sparktmpFile")
       .set("spark.dynamicAllocation.enabled","true")
       .set("spark.dynamicAllocation.testing","true")
+      .set("spark.streaming.driver.writeAheadLog.closeFileAfterWrite","true")
+      .set("spark.streaming.receiver.writeAheadLog.closeFileAfterWrite","true")
     val session = SparkSession.builder().appName(appName).config(conf).master("local").getOrCreate()
     session.sparkContext.setLocalProperty("spark.scheduler.pool", "fair_pool")
     session
