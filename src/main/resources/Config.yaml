@@ -4,7 +4,7 @@ KafkaTopic: ["topic1-emp","topic1-dept"]
 KafkaSchemaDataSetName: ["emp.avsc","dept.avsc"]
 outputOptions:
   NoSqlDb: Cassandra
-  DB: Mysql
+  DB: mysql
   FileLoc:
   BigqueryStageTable:
   SaveMode:
@@ -15,4 +15,3 @@ FileConversion: CsvToText
 explain: true
 loglevels: Info
 appName: GcpDataFlow
-StorageLocation: ["gs://shuva-buc/emp","gs://shuva-buc/dept"]

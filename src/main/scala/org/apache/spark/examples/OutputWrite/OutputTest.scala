@@ -9,6 +9,9 @@ import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.apache.spark.examples.sparkSession.ConnectSession.getSparkSession
 import org.apache.spark.sql.avro.from_avro
 import org.apache.spark.sql.functions.col
+import com.datastax.spark.connector._
+import org.apache.spark.sql.cassandra._
+
 import org.apache.spark.sql.streaming.{DataStreamWriter, OutputMode}
 
 import scala.collection.mutable.ListBuffer
@@ -17,12 +20,13 @@ object OutputTest {
 
   val spark: SparkSession = getSparkSession
 
+
   def writeKafkaToMultipleApp(topicName : ListBuffer[String], schemaName: ListBuffer[String], config: Configurations) = {
     val topics=topicName.mkString(",")
 
     val df = spark.readStream
       .format("kafka")
-      .option("kafka.bootstrap.servers", "35.245.237.47:9094")
+      .option("kafka.bootstrap.servers", ":9094")
       .option("subscribe", s"$topics")
       .option("startingOffsets", "latest") //latest
       .load()
@@ -48,9 +52,17 @@ object OutputTest {
               prop.setProperty("driver", "com.mysql.jdbc.Driver")
               prop.setProperty("user", "root")
               prop.setProperty("password", "password")
-              val url = s"jdbc:mysql://35.230.188.90:3306/mydb"
+              val url = s"jdbc:mysql://:3306/mydb"
               val table = getPartialTopicName
               topicDF.write.mode("append").jdbc(url, table, prop)
+
+              topicDF.show()
+              // Write to Cassandra
+              topicDF.write
+                .format("org.apache.spark.sql.cassandra")
+                .options(Map( "table" -> table, "keyspace" -> "mydb"))
+                .mode("APPEND")
+                .save()
 
 
             }

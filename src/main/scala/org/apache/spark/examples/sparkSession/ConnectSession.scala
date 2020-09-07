@@ -11,17 +11,21 @@ object ConnectSession {
 
   private var configuration: Option[Configurations] = None
   private var spark: Option[SparkSession] = None
+  private var mysql: (String,String,String)=("","","")
+
   val resource="/Pool.xml"
   val sparktmpFile = readFileFromResource.readFromxmlResource(resource)
   private var myJDBC: Option[String] = None
 
-  def init(config: Configurations) {
+  def init(config: Configurations,MySqlHost: String,MySqlUserName: String
+           ,MySqlPassword: String,cassandraHost: String,cassandraUserName: String,cassandraPassword: String) {
     getLog.info(s"Get Spark session for ${config.appName} ")
-    spark = Some(createSparkSession(config.appName))
+    spark = Some(createSparkSession(config.appName,cassandraHost,cassandraUserName,cassandraPassword))
+    mysql=CreateMySqlJDBC(MySqlHost,MySqlUserName,MySqlPassword)
 
   }
 
-  private def createSparkSession(appName: String): SparkSession = {
+  private def createSparkSession(appName: String,cassandraHost:String,cassandraUserName:String,cassandraPassword:String): SparkSession = {
     val conf = new SparkConf()
       .setAppName("Connecting to Spark")
       .set("spark.scheduler.pool","FAIR")
@@ -30,26 +34,26 @@ object ConnectSession {
       .set("spark.dynamicAllocation.testing","true")
       .set("spark.streaming.driver.writeAheadLog.closeFileAfterWrite","true")
       .set("spark.streaming.receiver.writeAheadLog.closeFileAfterWrite","true")
+      .set("spark.cassandra.connection.host",cassandraHost)
+      .set("spark.cassandra.connection.port","9042")
+      .set("spark.cassandra.auth.username",cassandraUserName)
+      .set("spark.cassandra.auth.password",cassandraPassword)
+
     val session = SparkSession.builder().appName(appName).config(conf).master("local").getOrCreate()
     session.sparkContext.setLocalProperty("spark.scheduler.pool", "fair_pool")
     session
   }
 
 
-  def CreateMySqlJDBC(Environment: String): (String,String,String)= {
+  def CreateMySqlJDBC(MySqlHost:String,MySqlUserName:String,MySqlPassword:String): (String,String,String)= {
 
-    val server=Environment
-    val env = if (System.getenv("DEFAULTENV") == null)
-      s"$server"
-    else System.getenv("DEFAULTENV")
+  //  val conLoad = ConfigFactory.load()
+   // val ConParameters=conLoad.getConfig(env)
+    val UserName=MySqlUserName
+    val password=MySqlPassword
+    val Host=MySqlHost
 
-    val conLoad = ConfigFactory.load()
-    val ConParameters=conLoad.getConfig(env)
-    val UserName=ConParameters.getString("app.MySqlUserName")
-    val password= ConParameters.getString("app.MySqlUserPwd")
-    val port=ConParameters.getString("app.MySqlPort")
-
-    return (UserName,password,port)
+    return (UserName,password,Host)
 
   }
 
@@ -74,5 +78,8 @@ object ConnectSession {
     }
   }
 
+  def getMysql: (String,String,String) = {
+    return (mysql._1,mysql._2,mysql._3)
+  }
 
 }

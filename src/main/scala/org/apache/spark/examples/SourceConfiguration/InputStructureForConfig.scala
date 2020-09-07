@@ -12,8 +12,6 @@ trait InputStructure {
 
     def appName: String
 
-    def StorageLocation: List[String]
-
     def Environment : String
 
     def SourceType : String

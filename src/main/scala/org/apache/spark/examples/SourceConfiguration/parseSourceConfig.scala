@@ -8,7 +8,6 @@ class Configurations(
                      @JsonProperty("logLevels") _logLevels: String,
                      @JsonProperty("outputOptions") _outputOptions: Map[String,String],
                      @JsonProperty("appName") _appName: String,
-                     @JsonProperty("StorageLocation") _StorageLocation: List[String],
                      @JsonProperty("FileConversion") _FileConversion: String,
                      @JsonProperty("KafkaTopic") _KafkaTopic: List[String],
                      @JsonProperty("KafkaSchemaDataSetName") _KafkaSchemaDataSetName: List[String],
@@ -23,7 +22,6 @@ class Configurations(
   val FileConversion: String= Option(_FileConversion).getOrElse("")
   val outputOptions:  Map[String,String]= Option(_outputOptions).getOrElse(Map())
   val appName: String=Option(_appName).getOrElse("AutoGDS")
-  val StorageLocation: List[String]=Option(_StorageLocation).getOrElse(List())
   val KafkaTopic: List[String]=Option(_KafkaTopic).getOrElse(List())
   val KafkaSchemaDataSetName: List[String]=Option(_KafkaSchemaDataSetName).getOrElse(List())
 
